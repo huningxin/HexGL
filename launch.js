@@ -113,4 +113,24 @@
     };
   }
 
+  function onState(state) {
+    if (state & 8) {
+      if ($('step-1').style.display !== 'none') {
+        seiralport.write('END\n');
+        console.log('Write Data: END');
+        $('step-1').style.display = 'none';
+        $('step-2').style.display = 'block';
+        $('step-2').style.backgroundImage = "url(css/help-" + s[0][3] + ".png)";
+      } else if ($('step-2').style.display !== 'none') {
+        $('step-2').style.display = 'none';
+        $('step-3').style.display = 'block';
+        init(s[0][3], s[1][3], s[2][3], s[3][3]);
+      } else if ($('step-5').style.display !== 'none') {
+        window.location.reload();
+      }
+    }
+	}
+	serialportListener.addEventListener(onState);
+  seiralport.write('END\n');
+  console.log('Write Data: END');
 }).call(this);

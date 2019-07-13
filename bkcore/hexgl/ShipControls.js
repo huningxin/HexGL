@@ -46,6 +46,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 
 	this.active = true;
 	seiralport.write('START\n');
+	console.log('Write Data: START');
 	this.destroyed = false;
 	this.falling = false;
 
@@ -380,6 +381,9 @@ bkcore.hexgl.ShipControls.prototype.reset = function(position, rotation)
 
 bkcore.hexgl.ShipControls.prototype.terminate = function()
 {
+	seiralport.write('END\n');
+	console.log('Write Data: END');
+
 	this.destroy();
 
 	if(this.leapController != null)
@@ -396,7 +400,6 @@ bkcore.hexgl.ShipControls.prototype.destroy = function()
 	bkcore.Audio.stop('wind');
 
 	this.active = false;
-	seiralport.write('END\n');
 	this.destroyed = true;
 	this.collision.front = false;
 	this.collision.left = false;
@@ -406,7 +409,6 @@ bkcore.hexgl.ShipControls.prototype.destroy = function()
 bkcore.hexgl.ShipControls.prototype.fall = function()
 {
 	this.active = false;
-	seiralport.write('END\n');
 	this.collision.front = false;
 	this.collision.left = false;
 	this.collision.right = false;
