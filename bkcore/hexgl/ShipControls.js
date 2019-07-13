@@ -5,6 +5,37 @@
  *          To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/3.0/.
  */
 
+const SerialPort = require("serialport");
+const ByteLength = SerialPort.parsers.ByteLength;
+const seiralport = new SerialPort('COM5', {
+	baudRate: 115200,
+	autoOpen: false
+});
+
+const parser = new ByteLength({length: 1});
+seiralport.pipe(parser);
+
+seiralport.open(() => {
+	console.log("Seiral Port open");
+	parser.on('data', (data) => {
+		console.log('Received Data: ' + data.toString());
+		let state = parseInt(data.toString());
+		serialportListener.onState(state);
+	});
+})
+
+const serialportListener = {
+	listeners_: [],
+	addEventListener: function(f) {
+		this.listeners_.push(f);
+	},
+	onState: function(state) {
+		for (let i in this.listeners_) {
+			this.listeners_[i](state);
+		}
+	}
+};
+
 var bkcore = bkcore || {};
 bkcore.hexgl = bkcore.hexgl || {};
 
@@ -14,6 +45,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	var domElement = ctx.document;
 
 	this.active = true;
+	seiralport.write('START\n');
 	this.destroyed = false;
 	this.falling = false;
 
@@ -290,6 +322,27 @@ bkcore.hexgl.ShipControls = function(ctx)
 
 	domElement.addEventListener('keydown', onKeyDown, false);
 	domElement.addEventListener('keyup', onKeyUp, false);
+
+	function onState(state) {
+		if (state & 1) {
+			self.key.left = true;
+		} else {
+			self.key.left = false;
+		}
+
+		if (state & 2) {
+			self.key.right = true;
+		} else {
+			self.key.right = false;
+		}
+
+		if (state & 4) {
+			self.key.forward = true;
+		} else {
+			self.key.forward = false;
+		}
+	}
+	serialportListener.addEventListener(onState);
 };
 
 bkcore.hexgl.ShipControls.prototype.control = function(threeMesh)
@@ -343,6 +396,7 @@ bkcore.hexgl.ShipControls.prototype.destroy = function()
 	bkcore.Audio.stop('wind');
 
 	this.active = false;
+	seiralport.write('END\n');
 	this.destroyed = true;
 	this.collision.front = false;
 	this.collision.left = false;
@@ -352,6 +406,7 @@ bkcore.hexgl.ShipControls.prototype.destroy = function()
 bkcore.hexgl.ShipControls.prototype.fall = function()
 {
 	this.active = false;
+	seiralport.write('END\n');
 	this.collision.front = false;
 	this.collision.left = false;
 	this.collision.right = false;
