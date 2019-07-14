@@ -116,7 +116,7 @@
   function onState(state) {
     if (state & 8) {
       if ($('step-1').style.display !== 'none') {
-        seiralport.write('END\n');
+        serialport.write('END\n');
         console.log('Write Data: END');
         $('step-1').style.display = 'none';
         $('step-2').style.display = 'block';
@@ -131,6 +131,6 @@
     }
 	}
 	serialportListener.addEventListener(onState);
-  seiralport.write('END\n');
+  serialport.write('END\n');
   console.log('Write Data: END');
 }).call(this);

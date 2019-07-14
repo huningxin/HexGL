@@ -5,37 +5,6 @@
  *          To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/3.0/.
  */
 
-const SerialPort = require("serialport");
-const ByteLength = SerialPort.parsers.ByteLength;
-const seiralport = new SerialPort('COM5', {
-	baudRate: 115200,
-	autoOpen: false
-});
-
-const parser = new ByteLength({length: 1});
-seiralport.pipe(parser);
-
-seiralport.open(() => {
-	console.log("Seiral Port open");
-	parser.on('data', (data) => {
-		console.log('Received Data: ' + data.toString());
-		let state = parseInt(data.toString());
-		serialportListener.onState(state);
-	});
-})
-
-const serialportListener = {
-	listeners_: [],
-	addEventListener: function(f) {
-		this.listeners_.push(f);
-	},
-	onState: function(state) {
-		for (let i in this.listeners_) {
-			this.listeners_[i](state);
-		}
-	}
-};
-
 var bkcore = bkcore || {};
 bkcore.hexgl = bkcore.hexgl || {};
 
@@ -45,7 +14,7 @@ bkcore.hexgl.ShipControls = function(ctx)
 	var domElement = ctx.document;
 
 	this.active = true;
-	seiralport.write('START\n');
+	serialport.write('START\n');
 	console.log('Write Data: START');
 	this.destroyed = false;
 	this.falling = false;
@@ -381,7 +350,7 @@ bkcore.hexgl.ShipControls.prototype.reset = function(position, rotation)
 
 bkcore.hexgl.ShipControls.prototype.terminate = function()
 {
-	seiralport.write('END\n');
+	serialport.write('END\n');
 	console.log('Write Data: END');
 
 	this.destroy();
